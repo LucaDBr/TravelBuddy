@@ -6,6 +6,8 @@ platform :ios do
     build_app(
       scheme: "Runner",
       export_method: "app-store"
+      allowProvisioningUpdates: true
+
     )
     upload_to_testflight
   end
