@@ -4,6 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 import 'DBModels/trip_model.dart';
 import 'DBModels/itinerary_item.dart';
@@ -11,7 +12,14 @@ import 'DBModels/itinerary_item.dart';
 class ItineraryDayPage extends StatefulWidget {
   final TripModel trip;
   final ItineraryItem day;
-  const ItineraryDayPage({super.key, required this.trip, required this.day});
+  final bool createNew;
+
+  const ItineraryDayPage({
+    super.key,
+    required this.trip,
+    required this.day,
+    this.createNew = false,
+  });
 
   @override
   State<ItineraryDayPage> createState() => _ItineraryDayPageState();
@@ -22,7 +30,6 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
 
   final notesController = TextEditingController();
   final locationController = TextEditingController();
-
   final MapController _mapController = MapController();
   double _zoom = 10;
 
@@ -30,44 +37,83 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
   List<ItineraryPoint> items = [];
   List<Map<String, dynamic>> suggestions = [];
   String? selectedLocationName;
+  late DateTime startDate;
+  late DateTime endDate;
+
+  String? weatherMinMax;
+  String? currentTemp;
 
   @override
-void initState() {
-  super.initState();
-  items = List.from(widget.day.items);
+  void initState() {
+    super.initState();
+    items = List.from(widget.day.items);
+    startDate = widget.day.date;
+    endDate = widget.day.endDate;
 
-  if (items.isNotEmpty) {
-    final last = items.last;
-    selectedLocationName = last.title;
-    _zoom = 13;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _mapController.move(LatLng(last.latitude, last.longitude), _zoom);
-    });
+    if (items.isNotEmpty) {
+      final last = items.last;
+      selectedLocationName = last.title;
+      notesController.text = last.notes ?? '';
+      _zoom = 13;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _mapController.move(LatLng(last.latitude, last.longitude), _zoom);
+      });
+      _fetchWeather(last.latitude, last.longitude);
+    }
+
+    _refreshRoute();
   }
 
-  _refreshRoute();
-}
+  Future<void> _fetchWeather(double lat, double lon) async {
+    final date = DateFormat('yyyy-MM-dd').format(startDate);
+    final url = Uri.parse(
+      'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&daily=temperature_2m_max,temperature_2m_min&current_weather=true&start_date=$date&end_date=$date&timezone=auto',
+    );
+    final res = await http.get(url);
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      if (data['daily'] != null && data['daily']['temperature_2m_max'] != null) {
+        final max = data['daily']['temperature_2m_max'][0];
+        final min = data['daily']['temperature_2m_min'][0];
+        final current = data['current_weather']?['temperature'];
+
+        setState(() {
+          weatherMinMax = '🌤️ $min°C – $max°C';
+          currentTemp = current != null ? 'Aktuell: $current°C' : null;
+        });
+      }
+    }
+  }
+
   Future<void> _search(String query) async {
     if (query.length < 3) return;
     final url = Uri.parse(
-        'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=6');
+      'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=6&addressdetails=1');
     final res = await http.get(url, headers: {'User-Agent': 'travelbuddy-app'});
     if (res.statusCode == 200) {
       setState(() => suggestions = List.castFrom(jsonDecode(res.body)));
     }
   }
 
-  Future<void> _add(Map<String, dynamic> loc) async {
+  void _add(Map<String, dynamic> loc) {
     if (items.length >= maxPoints) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Maximal $maxPoints Orte pro Etappe erlaubt.')),
+        const SnackBar(content: Text('Maximal $maxPoints Orte pro Etappe erlaubt.')),
       );
       return;
     }
 
     final lat = double.tryParse(loc['lat'] ?? '');
     final lon = double.tryParse(loc['lon'] ?? '');
-    final name = loc['display_name'] ?? 'Ort';
+    final address = loc['address'] as Map<String, dynamic>?;
+
+    final name = address?['city'] ??
+        address?['town'] ??
+        address?['village'] ??
+        address?['state'] ??
+        loc['display_name'] ??
+        'Ort';
+
     if (lat == null || lon == null) return;
 
     final point = ItineraryPoint(
@@ -77,27 +123,19 @@ void initState() {
       longitude: lon,
     );
 
-    items.add(point);
-    await FirebaseFirestore.instance
-        .collection('trips')
-        .doc(widget.trip.id)
-        .collection('itineraries')
-        .doc(widget.day.id)
-        .update({
-      'items': items.map((e) => e.toJson()).toList(),
-      'lastModified': DateTime.now().toIso8601String(),
-    });
-
     setState(() {
+      items.add(point);
       selectedLocationName = name;
       _zoom = 13;
       _mapController.move(LatLng(lat, lon), _zoom);
-      notesController.clear();
       locationController.clear();
       suggestions.clear();
+      weatherMinMax = null;
+      currentTemp = null;
     });
 
     _refreshRoute();
+    _fetchWeather(lat, lon);
   }
 
   Future<void> _refreshRoute() async {
@@ -133,11 +171,54 @@ void initState() {
     }
   }
 
+  Future<void> _saveToFirestore() async {
+    final docRef = FirebaseFirestore.instance
+        .collection('trips')
+        .doc(widget.trip.id)
+        .collection('itineraries')
+        .doc(widget.day.id);
+
+    await docRef.set({
+      'id': widget.day.id,
+      'dayIndex': startDate.millisecondsSinceEpoch,
+      'date': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'items': items.map((e) => e.toJson()).toList(),
+      'lastModified': DateTime.now().toIso8601String(),
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Etappe wurde gespeichert.')),
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _pickDateRange() async {
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: widget.trip.startDate!,
+      lastDate: widget.trip.endDate!,
+      initialDateRange: DateTimeRange(start: startDate, end: endDate),
+    );
+    if (range != null) {
+      setState(() {
+        startDate = range.start;
+        endDate = range.end;
+      });
+      if (items.isNotEmpty) {
+        _fetchWeather(items.last.latitude, items.last.longitude);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final formatter = DateFormat('dd.MM.yyyy');
     final startCenter = items.isNotEmpty
         ? LatLng(items.last.latitude, items.last.longitude)
-        : const LatLng(51.1657, 10.4515); // Mittelpunkt DE
+        : const LatLng(51.1657, 10.4515);
 
     final markers = items
         .map((p) => Marker(
@@ -149,9 +230,23 @@ void initState() {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Etappe – ${widget.day.date.day}.${widget.day.date.month}')),
+      appBar: AppBar(title: Text('Etappe – ${formatter.format(startDate)}')),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: ElevatedButton.icon(
+              onPressed: _pickDateRange,
+              icon: const Icon(Icons.date_range),
+              label: Text('Zeitraum wählen: ${formatter.format(startDate)} - ${formatter.format(endDate)}'),
+            ),
+          ),
+          if (weatherMinMax != null || currentTemp != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: Text('${currentTemp ?? ''}  ${weatherMinMax ?? ''}',
+                  style: const TextStyle(fontSize: 16)),
+            ),
           SizedBox(
             height: 260,
             child: Stack(
@@ -191,10 +286,8 @@ void initState() {
           if (selectedLocationName != null)
             Padding(
               padding: const EdgeInsets.all(8),
-              child: Text(
-                '📍 Ausgewählt: $selectedLocationName',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
+              child: Text('📍 Ausgewählt: $selectedLocationName',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
             ),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -220,8 +313,14 @@ void initState() {
                       separatorBuilder: (_, __) => const Divider(height: 0),
                       itemBuilder: (_, i) {
                         final s = suggestions[i];
+                        final address = s['address'] as Map<String, dynamic>?;
+                        final shortName = address?['city'] ??
+                            address?['town'] ??
+                            address?['village'] ??
+                            address?['state'] ??
+                            s['display_name'];
                         return ListTile(
-                          title: Text(s['display_name'] ?? ''),
+                          title: Text(shortName ?? ''),
                           onTap: () => _add(s),
                         );
                       },
@@ -231,6 +330,20 @@ void initState() {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12),
+        child: ElevatedButton.icon(
+          onPressed: _saveToFirestore,
+          icon: const Icon(Icons.save),
+          label: const Text("Etappe speichern"),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size.fromHeight(50),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontSize: 18),
+          ),
+        ),
       ),
     );
   }
@@ -248,9 +361,19 @@ class _ZoomButtons extends StatelessWidget {
       right: 12,
       child: Column(
         children: [
-          FloatingActionButton(mini: true, heroTag: 'dZIn', child: const Icon(Icons.add), onPressed: onZoomIn),
+          FloatingActionButton(
+            mini: true,
+            heroTag: 'dZIn',
+            child: const Icon(Icons.add),
+            onPressed: onZoomIn,
+          ),
           const SizedBox(height: 8),
-          FloatingActionButton(mini: true, heroTag: 'dZOut', child: const Icon(Icons.remove), onPressed: onZoomOut),
+          FloatingActionButton(
+            mini: true,
+            heroTag: 'dZOut',
+            child: const Icon(Icons.remove),
+            onPressed: onZoomOut,
+          ),
         ],
       ),
     );

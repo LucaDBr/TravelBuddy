@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -28,38 +29,63 @@ class _TripplanungPageState extends State<TripplanungPage> {
         .collection('trips')
         .doc(widget.trip.id)
         .collection('itineraries')
-        .orderBy('dayIndex')
         .snapshots()
         .map((snap) => snap.docs
             .map((d) => ItineraryItem.fromJson(d.data()).copyWith(id: d.id))
-            .toList());
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date)));
   }
 
   Future<void> _createStage() async {
-    await showDialog(
-      context: context,
-      builder: (ctx) => _StageDialog(
-        tripStart: widget.trip.startDate!,
-        tripEnd: widget.trip.endDate!,
-        onSave: (s, e) async {
-          final doc = FirebaseFirestore.instance
-              .collection('trips')
-              .doc(widget.trip.id)
-              .collection('itineraries')
-              .doc();
-          await doc.set(
-            ItineraryItem(
-              id: doc.id,
-              dayIndex: s.millisecondsSinceEpoch,
-              date: s,
-              endDate: e,
-              items: [],
-              lastModified: DateTime.now(),
-            ).toJson(),
-          );
-        },
+    final now = DateTime.now();
+    final doc = FirebaseFirestore.instance
+        .collection('trips')
+        .doc(widget.trip.id)
+        .collection('itineraries')
+        .doc();
+
+    final newDay = ItineraryItem(
+      id: doc.id,
+      dayIndex: now.millisecondsSinceEpoch,
+      date: now,
+      endDate: now,
+      items: [],
+      lastModified: now,
+    );
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ItineraryDayPage(
+          trip: widget.trip,
+          day: newDay,
+          createNew: true,
+        ),
       ),
     );
+  }
+
+  Future<void> _deleteStage(ItineraryItem item) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Etappe löschen"),
+        content: const Text("Möchtest du diese Etappe wirklich entfernen?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Abbrechen")),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Löschen")),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FirebaseFirestore.instance
+          .collection('trips')
+          .doc(widget.trip.id)
+          .collection('itineraries')
+          .doc(item.id)
+          .delete();
+    }
   }
 
   @override
@@ -71,7 +97,7 @@ class _TripplanungPageState extends State<TripplanungPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.trip.title),
+            Text(widget.trip.title, style: const TextStyle(fontWeight: FontWeight.bold)),
             Text(
               '${formatter.format(widget.trip.startDate!)} → ${formatter.format(widget.trip.endDate!)}',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white70),
@@ -82,15 +108,12 @@ class _TripplanungPageState extends State<TripplanungPage> {
       body: StreamBuilder<List<ItineraryItem>>(
         stream: _stages$,
         builder: (context, snap) {
-          if (!snap.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final stages = snap.data!;
-          final points = stages
-              .where((s) => s.items.isNotEmpty)
-              .map((s) => s.items.first)
-              .toList();
+          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+
+          final stages = snap.data!..sort((a, b) => a.date.compareTo(b.date));
+          final points = stages.where((s) => s.items.isNotEmpty).map((s) => s.items.last).toList();
           final coords = points.map((p) => LatLng(p.latitude, p.longitude)).toList();
+
           LatLng center = const LatLng(48.8566, 2.3522);
           if (coords.isNotEmpty) {
             center = coords.first;
@@ -101,86 +124,157 @@ class _TripplanungPageState extends State<TripplanungPage> {
 
           return Column(
             children: [
-              SizedBox(
-                height: 260,
-                child: Stack(
-                  children: [
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(center: center, zoom: _zoom),
-                      children: [
-                        TileLayer(
-                          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.travelbuddy.app',
-                        ),
-                        if (coords.length >= 2)
-                          PolylineLayer(polylines: [
-                            Polyline(points: coords, strokeWidth: 4, color: Colors.blue),
-                          ]),
-                        MarkerLayer(markers: [
-                          for (final p in points)
-                            Marker(
-                              point: LatLng(p.latitude, p.longitude),
-                              width: 40,
-                              height: 40,
-                              child: const Icon(Icons.location_pin, color: Colors.red),
+              Card(
+                margin: const EdgeInsets.all(12),
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: SizedBox(
+                  height: 240,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: FlutterMap(
+                          mapController: _mapController,
+                          options: MapOptions(center: center, zoom: _zoom),
+                          children: [
+                            TileLayer(
+                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'com.travelbuddy.app',
                             ),
-                        ]),
-                      ],
-                    ),
-                    _ZoomButtons(
-                      onZoomIn: () => setState(() {
-                        _zoom++;
-                        _mapController.move(_mapController.center, _zoom);
-                      }),
-                      onZoomOut: () => setState(() {
-                        _zoom--;
-                        _mapController.move(_mapController.center, _zoom);
-                      }),
-                    ),
-                  ],
+                            if (coords.length >= 2)
+                              PolylineLayer(polylines: [
+                                Polyline(points: coords, strokeWidth: 4, color: Colors.blue),
+                              ]),
+                            MarkerLayer(
+                              markers: points
+                                  .map((p) => Marker(
+                                        point: LatLng(p.latitude, p.longitude),
+                                        width: 40,
+                                        height: 40,
+                                        child: const Icon(Icons.location_pin, color: Colors.red),
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _ZoomButtons(
+                        onZoomIn: () => setState(() {
+                          _zoom++;
+                          _mapController.move(_mapController.center, _zoom);
+                        }),
+                        onZoomOut: () => setState(() {
+                          _zoom--;
+                          _mapController.move(_mapController.center, _zoom);
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   'Reisezeitraum: ${formatter.format(widget.trip.startDate!)} - ${formatter.format(widget.trip.endDate!)}',
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               Expanded(
-                child: stages.isEmpty
-                    ? const Center(child: Text('Noch keine Etappen angelegt.'))
-                    : ListView.separated(
-                        itemCount: stages.length,
-                        separatorBuilder: (_, __) => const Divider(height: 0),
-                        itemBuilder: (_, idx) {
-                          final s = stages[idx];
-                          final start = formatter.format(s.date);
-                          final end = formatter.format(s.endDate);
-                          return ListTile(
-                            title: Text('Etappe ${idx + 1}'),
-                            subtitle: Text('$start → $end'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ItineraryDayPage(trip: widget.trip, day: s),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  child: ReorderableListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: stages.length,
+                    onReorder: (oldIndex, newIndex) async {
+                      if (newIndex > oldIndex) newIndex--;
+                      final oldItem = stages[oldIndex];
+                      final newItem = stages[newIndex];
+
+                      final batch = FirebaseFirestore.instance.batch();
+                      final oldRef = FirebaseFirestore.instance
+                          .collection('trips')
+                          .doc(widget.trip.id)
+                          .collection('itineraries')
+                          .doc(oldItem.id);
+                      final newRef = FirebaseFirestore.instance
+                          .collection('trips')
+                          .doc(widget.trip.id)
+                          .collection('itineraries')
+                          .doc(newItem.id);
+
+                      batch.update(oldRef, {
+                        'dayIndex': newIndex,
+                        'date': newItem.date.toIso8601String(),
+                        'endDate': newItem.endDate.toIso8601String(),
+                      });
+
+                      batch.update(newRef, {
+                        'dayIndex': oldIndex,
+                        'date': oldItem.date.toIso8601String(),
+                        'endDate': oldItem.endDate.toIso8601String(),
+                      });
+
+                      await batch.commit();
+                    },
+                    itemBuilder: (_, idx) {
+                      final s = stages[idx];
+                      final start = formatter.format(s.date);
+                      final end = formatter.format(s.endDate);
+                      final hasItems = s.items.isNotEmpty;
+                      final title = hasItems ? s.items.last.title : 'Etappe ${idx + 1}';
+                      final latLng = hasItems
+                          ? LatLng(s.items.last.latitude, s.items.last.longitude)
+                          : null;
+
+                      return Card(
+                        key: ValueKey(s.id),
+                        margin: const EdgeInsets.symmetric(vertical: 6),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        child: ListTile(
+                          title: Text(title),
+                          subtitle: Text('$start → $end'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ItineraryDayPage(trip: widget.trip, day: s),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _deleteStage(s),
+                              ),
+                              const Icon(Icons.drag_handle),
+                            ],
+                          ),
+                          onTap: () {
+                            if (latLng != null) {
+                              _mapController.move(latLng, _zoom);
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _createStage,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('Neue Etappe'),
       ),
     );
   }
@@ -201,108 +295,18 @@ class _ZoomButtons extends StatelessWidget {
           FloatingActionButton(
             mini: true,
             heroTag: 'zIn',
-            child: const Icon(Icons.add),
             onPressed: onZoomIn,
+            child: const Icon(Icons.add),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
             mini: true,
             heroTag: 'zOut',
-            child: const Icon(Icons.remove),
             onPressed: onZoomOut,
+            child: const Icon(Icons.remove),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _StageDialog extends StatefulWidget {
-  final DateTime tripStart;
-  final DateTime tripEnd;
-  final void Function(DateTime start, DateTime end) onSave;
-
-  const _StageDialog({
-    required this.tripStart,
-    required this.tripEnd,
-    required this.onSave,
-  });
-
-  @override
-  State<_StageDialog> createState() => __StageDialogState();
-}
-
-class __StageDialogState extends State<_StageDialog> {
-  late DateTime startDate;
-  late DateTime endDate;
-
-  @override
-  void initState() {
-    super.initState();
-    startDate = widget.tripStart;
-    endDate = widget.tripStart;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final fmt = DateFormat('dd.MM.yyyy');
-    return AlertDialog(
-      title: const Text('Neue Etappe'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: Text('Start: ${fmt.format(startDate)}'),
-            trailing: const Icon(Icons.date_range),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                firstDate: widget.tripStart,
-                lastDate: widget.tripEnd,
-                initialDate: startDate,
-              );
-              if (picked != null) {
-                setState(() {
-                  startDate = picked;
-                  if (endDate.isBefore(startDate)) {
-                    endDate = picked;
-                  }
-                });
-              }
-            },
-          ),
-          ListTile(
-            title: Text('Ende:  ${fmt.format(endDate)}'),
-            trailing: const Icon(Icons.date_range),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                firstDate: startDate,
-                lastDate: widget.tripEnd,
-                initialDate: endDate,
-              );
-              if (picked != null) {
-                setState(() {
-                  endDate = picked;
-                });
-              }
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Abbrechen'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            widget.onSave(startDate, endDate);
-            Navigator.pop(context);
-          },
-          child: const Text('Speichern'),
-        ),
-      ],
     );
   }
 }
