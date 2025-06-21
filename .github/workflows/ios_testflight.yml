@@ -8,28 +8,31 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: 📦 Checkout Code
-      uses: actions/checkout@v3
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v3
 
-    - name: 🧰 Install Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "3.32.4"
+      - name: 🧰 Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.4"
 
-    - name: 📚 Install Dependencies
-      run: flutter pub get
+      - name: 📚 Install Flutter Dependencies
+        run: flutter pub get
 
-    - name: 🛠️ Build iOS App (no code sign)
-      run: flutter build ios --release --no-codesign
+      - name: 🛠️ Build iOS App (no code sign)
+        run: flutter build ios --release --no-codesign
 
-    - name: 🚀 Install Fastlane
-      run: sudo gem install fastlane -NV
+      - name: 🔧 Set up Ruby & Bundler
+        run: |
+          sudo gem install bundler
+          bundle install
+        working-directory: ios
 
-    - name: 🚀 Run Fastlane Beta Deployment
-      run: |
-        cd ios
-        fastlane beta
-      env:
-        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-        APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      - name: 🚀 Run Fastlane Beta Deployment
+        run: |
+          cd ios
+          bundle exec fastlane beta
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
