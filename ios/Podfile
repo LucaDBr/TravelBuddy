@@ -1,16 +1,27 @@
 # ios/Podfile
-
 platform :ios, '12.0'
 
-# ignore all warnings from all pods
-inhibit_all_warnings!
+# Disable CocoaPods analytics (optional)
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-flutter_application_path = File.expand_path('../..', __FILE__)
-load File.join(flutter_application_path, '.flutter-plugins-dependencies')
+# -------------------------------------------------
+# ➡️  Flutter-Pod-Script einbinden  (WICHTIG!)
+# -------------------------------------------------
+require File.expand_path(
+  File.join('packages', 'flutter_tools', 'bin', 'podhelper'),
+  File.dirname(File.realpath(__FILE__))
+)
+
+flutter_ios_podfile_setup   # Vorbereitung durch Flutter
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  # 👉 hier ruft CocoaPods jetzt **korrekt** die Flutter-Helfer-Methode auf
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  flutter_post_install(installer)
 end
