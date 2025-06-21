@@ -1,14 +1,16 @@
+# ios/Podfile
+
 platform :ios, '12.0'
 
-use_frameworks!
-use_modular_headers!
+# ignore all warnings from all pods
+inhibit_all_warnings!
+
+flutter_application_path = File.expand_path('../..', __FILE__)
+load File.join(flutter_application_path, '.flutter-plugins-dependencies')
 
 target 'Runner' do
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
+  use_frameworks!
+  use_modular_headers!
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-  end
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
