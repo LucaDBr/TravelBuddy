@@ -1,0 +1,35 @@
+name: iOS TestFlight Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: 📦 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🧰 Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.22.0"
+
+    - name: 📚 Install Dependencies
+      run: flutter pub get
+
+    - name: 🛠️ Build iOS App (no code sign)
+      run: flutter build ios --release --no-codesign
+
+    - name: 🚀 Install Fastlane
+      run: sudo gem install fastlane -NV
+
+    - name: 🚀 Run Fastlane Beta Deployment
+      run: |
+        cd ios
+        fastlane beta
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
