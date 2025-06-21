@@ -2,35 +2,29 @@
 platform :ios, '12.0'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-# 🔍 Pfad zum Flutter-Root dynamisch aus Generated.xcconfig lesen
-def flutter_root
-  generated_config = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __dir__)
-  File.foreach(generated_config) do |line|
-    return line.split('=')[1].strip if line.start_with?('FLUTTER_ROOT=')
-  end
-  raise "FLUTTER_ROOT not found in #{generated_config}"
-end
+# ------------------------------------------------------------------
+# Das Flutter-Root kommt als ENV-Variable vom Befehl `flutter build`
+# ------------------------------------------------------------------
+flutter_root = ENV['FLUTTER_ROOT']
+require File.expand_path(
+  File.join('packages', 'flutter_tools', 'bin', 'podhelper'),
+  flutter_root
+)
 
-# ➡️  Jetzt das Flutter-Pod-Script richtig einbinden
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'),
-                         flutter_root)
-
-flutter_ios_podfile_setup          # Vorbereitungen
+flutter_ios_podfile_setup   # Vorbereitung durch Flutter
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
+  # Alle Flutter-Pods + Plugins installieren
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
   flutter_post_install(installer)
 
-  # Einheitlich iOS 12 setzen, sonst Warnungen
+  # Einheitlich iOS 12 einstellen, sonst gibt’s Warnungen
   installer.pods_project.targets.each do |t|
     t.build_configurations.each do |c|
-      c.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
-    end
-  end
-end
+      c.build_settings['IPH
