@@ -5,10 +5,10 @@ platform :ios do
   lane :beta do
     build_app(
       scheme: "Runner",
-      export_method: "app-store"
-      allowProvisioningUpdates: true
-
+      export_method: "app-store",
+      allow_provisioning_updates: true
     )
+
     upload_to_testflight
   end
 end
