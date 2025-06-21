@@ -6,7 +6,8 @@ platform :ios do
     build_app(
       scheme: "Runner",
       export_method: "app-store",
-      allow_provisioning_updates: true
+      export_team_id: "Y9GHGBP8U6", # Falls nötig
+      skip_codesigning: false
     )
 
     upload_to_testflight
