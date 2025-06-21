@@ -14,7 +14,7 @@ jobs:
     - name: 🧰 Install Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: "3.22.0"
+         flutter-version: "3.32.4"
 
     - name: 📚 Install Dependencies
       run: flutter pub get
