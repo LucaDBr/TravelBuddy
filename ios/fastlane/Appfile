@@ -1,0 +1,2 @@
+app_identifier("com.example.travelbuddyFlutter") # <- Deine Bundle-ID
+apple_id("lucabrehm10@gmail.com")                # <- Deine Apple-ID
