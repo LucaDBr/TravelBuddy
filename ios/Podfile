@@ -1,16 +1,13 @@
-# min. iOS 13 wegen Firebase, Flutter etc.
 platform :ios, '13.0'
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-# Flutter Framework einbinden – aktueller Pfad!
-require File.expand_path(File.join('..', 'Flutter', 'flutter_export_environment'), __FILE__)
-require File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-require File.expand_path(File.join('..', 'Flutter', 'ephemeral', 'FlutterPods.rb'), __FILE__)
+# Wichtig: KEINE flutter_export_environment.rb einbinden!
+require_relative '../Flutter/ephemeral/FlutterPods.rb'
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
 end
