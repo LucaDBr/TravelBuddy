@@ -1,9 +1,7 @@
-# ios/Podfile — Flutter-kompatibel mit Codemagic
-
 platform :ios, '13.0'
 
-# Dynamisch korrektes Flutter SDK finden
-flutter_root = ENV['FLUTTER_ROOT']
+# Explizit gültigen Pfad setzen
+flutter_root = '/Users/builder/programs/flutter'
 load File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelpers.rb')
 
 target 'Runner' do
