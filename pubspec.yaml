@@ -20,7 +20,8 @@ dependencies:
   json_annotation: ^4.8.1
   geocoding: ^4.0.0
   webview_flutter: ^4.2.2
-  flutter_map: ^9.0.0
+  flutter_map: ^8.1.1
+
   latlong2: ^0.9.0
   http: ^1.1.0
   provider: ^6.1.1
