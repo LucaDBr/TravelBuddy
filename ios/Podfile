@@ -1,12 +1,13 @@
-platform :ios, '13.0'
+# ios/Podfile  – funktioniert mit Flutter 3.16 +
 
-ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+platform :ios, '13.0'          # oder 16.0 / 17.0, wie du möchtest
 
-use_frameworks!
-use_modular_headers!
-
-require_relative '../Flutter/ephemeral/FlutterPods.rb'
+flutter_root = File.expand_path(File.join('..', '..'))
+load File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelpers.rb')
 
 target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
   install_all_flutter_pods File.dirname(File.realpath(__FILE__))
 end
