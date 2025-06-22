@@ -38,8 +38,7 @@ class _ReiseGenerierenPageState extends State<ReiseGenerierenPage> {
 
   Future<void> _pickDates() async {
     final now = DateTime.now();
-    final init = range ??
-        DateTimeRange(start: now, end: now.add(const Duration(days: 7)));
+    final init = range ?? DateTimeRange(start: now, end: now.add(const Duration(days: 7)));
     final picked = await showDateRangePicker(
       context: context,
       firstDate: now,
@@ -92,9 +91,12 @@ class _ReiseGenerierenPageState extends State<ReiseGenerierenPage> {
       );
       await tripRef.set(trip.toJson());
 
+      int tagCounter = 0;
       for (int i = 0; i < days.length; i++) {
         final d = days[i] as Map<String, dynamic>;
-        final date = DateTime.parse(d['date']);
+        final startDate = DateTime.parse(d['date']);
+        final endDate = d['enddate'] != null ? DateTime.parse(d['enddate']) : startDate;
+
         final points = (d['points'] as List).map((p) {
           final lat = (p['latitude'] as num?)?.toDouble() ?? 0.0;
           final lon = (p['longitude'] as num?)?.toDouble() ?? 0.0;
@@ -109,9 +111,9 @@ class _ReiseGenerierenPageState extends State<ReiseGenerierenPage> {
         final dayRef = tripRef.collection('itineraries').doc();
         await dayRef.set({
           'id': dayRef.id,
-          'dayIndex': i,
-          'date': date.toIso8601String(),
-          'endDate': date.toIso8601String(),
+          'dayIndex': tagCounter++,
+          'date': startDate.toIso8601String(),
+          'endDate': endDate.toIso8601String(),
           'items': points.map((e) => e.toJson()).toList(),
           'lastModified': DateTime.now().toIso8601String(),
         });
@@ -137,34 +139,20 @@ class _ReiseGenerierenPageState extends State<ReiseGenerierenPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (status.isNotEmpty)
-                Text(status,
-                    style: TextStyle(
-                      color: status.startsWith('✅')
-                          ? Colors.green
-                          : Colors.red,
-                    )),
+                Text(status, style: TextStyle(color: status.startsWith('✅') ? Colors.green : Colors.red)),
               const SizedBox(height: 12),
               TextField(
                 controller: landCtrl,
-                decoration:
-                    const InputDecoration(labelText: 'Zielland / Region'),
+                decoration: const InputDecoration(labelText: 'Zielland / Region'),
               ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 6,
-                children: interessen
-                    .map((e) => FilterChip(
-                          label: Text(e),
-                          selected: selectedTags.contains(e),
-                          onSelected: (v) => setState(() {
-                            if (v) {
-                              selectedTags.add(e);
-                            } else {
-                              selectedTags.remove(e);
-                            }
-                          }),
-                        ))
-                    .toList(),
+                children: interessen.map((e) => FilterChip(
+                  label: Text(e),
+                  selected: selectedTags.contains(e),
+                  onSelected: (v) => setState(() => v ? selectedTags.add(e) : selectedTags.remove(e)),
+                )).toList(),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -196,49 +184,30 @@ class _ReiseGenerierenPageState extends State<ReiseGenerierenPage> {
               Text('Transportmittel:'),
               Wrap(
                 spacing: 6,
-                children: transport
-                    .map((e) => FilterChip(
-                          label: Text(e),
-                          selected: selectedTransport.contains(e),
-                          onSelected: (v) => setState(() {
-                            if (v) {
-                              selectedTransport.add(e);
-                            } else {
-                              selectedTransport.remove(e);
-                            }
-                          }),
-                        ))
-                    .toList(),
+                children: transport.map((e) => FilterChip(
+                  label: Text(e),
+                  selected: selectedTransport.contains(e),
+                  onSelected: (v) => setState(() => v ? selectedTransport.add(e) : selectedTransport.remove(e)),
+                )).toList(),
               ),
               const SizedBox(height: 12),
               Text('Unterkunftsarten:'),
               Wrap(
                 spacing: 6,
-                children: unterkuenfte
-                    .map((e) => FilterChip(
-                          label: Text(e),
-                          selected: selectedUnterkunft.contains(e),
-                          onSelected: (v) => setState(() {
-                            if (v) {
-                              selectedUnterkunft.add(e);
-                            } else {
-                              selectedUnterkunft.remove(e);
-                            }
-                          }),
-                        ))
-                    .toList(),
+                children: unterkuenfte.map((e) => FilterChip(
+                  label: Text(e),
+                  selected: selectedUnterkunft.contains(e),
+                  onSelected: (v) => setState(() => v ? selectedUnterkunft.add(e) : selectedUnterkunft.remove(e)),
+                )).toList(),
               ),
               const SizedBox(height: 16),
               ListTile(
                 title: Text(
-                  range == null
-                      ? 'Zeitraum wählen'
-                      : '${fmt.format(range!.start)} – ${fmt.format(range!.end)}',
+                  range == null ? 'Zeitraum wählen' : '${fmt.format(range!.start)} – ${fmt.format(range!.end)}',
                 ),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: _pickDates,
-                shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 tileColor: Colors.grey.shade200,
               ),
               const SizedBox(height: 20),
