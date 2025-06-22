@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'reise_detail_page.dart';
 import 'neue_reise_page.dart';
-import 'reise_generieren_page.dart'; // NEU
+import 'reise_generieren_page.dart';
 import 'DBModels/trip_model.dart';
 
 class ReiseUebersichtPage extends StatelessWidget {
@@ -18,77 +18,80 @@ class ReiseUebersichtPage extends StatelessWidget {
         .collection('trips')
         .where('ownerUid', isEqualTo: user.uid)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return TripModel.fromJson(data).copyWith(id: doc.id);
-            }).toList());
+        .map((snapshot) {
+      final trips = <TripModel>[];
+      for (final doc in snapshot.docs) {
+        try {
+          trips.add(TripModel.fromJson(doc.data()).copyWith(id: doc.id));
+        } catch (e) {
+          debugPrint('❌ Parsingfehler Trip ${doc.id}: $e');
+        }
+      }
+      return trips;
+    });
   }
 
-  Future<void> _reiseLoeschenMitBestaetigung(BuildContext context, TripModel trip) async {
-    bool bestaetigt = false;
+  Future<void> _reiseLoeschenMitBestaetigung(
+      BuildContext context, TripModel trip) async {
+    bool confirmed = false;
+    int countdown = 3;
 
     await showDialog(
       context: context,
       builder: (ctx) {
-        int countdown = 3;
-        late StateSetter updateState;
-
+        late StateSetter update;
         void tick() {
           Future.delayed(const Duration(seconds: 1), () {
             if (countdown > 1) {
-              updateState(() {
-                countdown--;
-                tick();
-              });
+              update(() => countdown--);
+              tick();
             }
           });
         }
 
-        return StatefulBuilder(
-          builder: (context, setState) {
-            updateState = setState;
-            tick();
-            return AlertDialog(
-              title: const Text('Reise löschen'),
-              content: Text(
-                'Möchtest du die Reise "${trip.title}" wirklich löschen?\n\n'
-                'Löschen ist erst nach $countdown Sekunden möglich.',
-              ),
-              actions: [
-                TextButton(
+        return StatefulBuilder(builder: (context, setState) {
+          update = setState;
+          tick();
+          return AlertDialog(
+            title: const Text('Reise löschen'),
+            content: Text(
+              'Möchtest du die Reise "${trip.title}" wirklich löschen?\n'
+              'Löschen ist erst nach $countdown s möglich.',
+            ),
+            actions: [
+              TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Abbrechen'),
-                ),
-                TextButton(
-                  onPressed: countdown <= 1
-                      ? () {
-                          bestaetigt = true;
-                          Navigator.pop(ctx);
-                        }
-                      : null,
-                  child: const Text('Löschen'),
-                ),
-              ],
-            );
-          },
-        );
+                  child: const Text('Abbrechen')),
+              TextButton(
+                onPressed: countdown <= 1
+                    ? () {
+                        confirmed = true;
+                        Navigator.pop(ctx);
+                      }
+                    : null,
+                child: const Text('Löschen'),
+              ),
+            ],
+          );
+        });
       },
     );
 
-    if (bestaetigt) {
-      await FirebaseFirestore.instance.collection('trips').doc(trip.id).delete();
+    if (confirmed) {
+      await FirebaseFirestore.instance
+          .collection('trips')
+          .doc(trip.id)
+          .delete();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Reise "${trip.title}" gelöscht')),
       );
     }
   }
 
-  void _zeigeReiseGenerierenDialog(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const ReiseGenerierenPage()),
-    );
-  }
+  void _zeigeReiseGenerierenDialog(BuildContext context) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ReiseGenerierenPage()),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +101,13 @@ class ReiseUebersichtPage extends StatelessWidget {
         stream: ladeReisen(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Center(child: Text('Fehler beim Laden der Reisen'));
+            return Center(
+              child: Text(
+                'Fehler beim Laden:\n${snapshot.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           }
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -111,22 +120,22 @@ class ReiseUebersichtPage extends StatelessWidget {
 
           return ListView.builder(
             itemCount: reisen.length,
-            itemBuilder: (context, index) {
-              final trip = reisen[index];
+            itemBuilder: (context, idx) {
+              final trip = reisen[idx];
               return ListTile(
                 title: Text(trip.title),
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () => _reiseLoeschenMitBestaetigung(context, trip),
+                  icon:
+                      const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () =>
+                      _reiseLoeschenMitBestaetigung(context, trip),
                 ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ReiseDetailPage(trip: trip),
-                    ),
-                  );
-                },
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ReiseDetailPage(trip: trip),
+                  ),
+                ),
               );
             },
           );
@@ -137,8 +146,8 @@ class ReiseUebersichtPage extends StatelessWidget {
         children: [
           FloatingActionButton.extended(
             heroTag: 'generate',
-            icon: const Icon(Icons.auto_fix_high),
             label: const Text('Reise generieren'),
+            icon: const Icon(Icons.auto_fix_high),
             onPressed: () => _zeigeReiseGenerierenDialog(context),
           ),
           const SizedBox(height: 12),

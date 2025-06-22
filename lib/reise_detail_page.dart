@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
+
 import 'DBModels/trip_model.dart';
 import 'reise_konfig_page.dart';
 
@@ -15,10 +16,10 @@ class ReiseDetailPage extends StatefulWidget {
 
 class _ReiseDetailPageState extends State<ReiseDetailPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController startController = TextEditingController();
-  final TextEditingController endController = TextEditingController();
-  final TextEditingController destinationController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  final startController = TextEditingController();
+  final endController = TextEditingController();
+  final destinationController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   bool loading = true;
   bool editMode = false;
@@ -46,6 +47,7 @@ class _ReiseDetailPageState extends State<ReiseDetailPage> {
     }
 
     final resolvedFlag = await _resolveCountryCode(destinationController.text);
+    if (!mounted) return;
     setState(() {
       flagCode = resolvedFlag;
       loading = false;
@@ -67,32 +69,59 @@ class _ReiseDetailPageState extends State<ReiseDetailPage> {
   }
 
   Future<void> _speichern() async {
-    await FirebaseFirestore.instance.collection('trips').doc(widget.trip.id).update({
-      'startDate': startController.text.trim(),
-      'endDate': endController.text.trim(),
-      'destination': destinationController.text.trim(),
-      'description': descriptionController.text.trim(),
-    });
+    try {
+      final payload = <String, dynamic>{
+        'destination': destinationController.text.trim(),
+        'description': descriptionController.text.trim(),
+      };
 
-    final newFlag = await _resolveCountryCode(destinationController.text);
+      // Datum nur übertragen, wenn gültig
+      if (startController.text.trim().isNotEmpty) {
+        final startDate =
+            DateFormat('dd.MM.yyyy').parse(startController.text.trim());
+        payload['startDate'] = Timestamp.fromDate(startDate);
+      }
+      if (endController.text.trim().isNotEmpty) {
+        final endDate =
+            DateFormat('dd.MM.yyyy').parse(endController.text.trim());
+        payload['endDate'] = Timestamp.fromDate(endDate);
+      }
 
-    setState(() {
-      flagCode = newFlag;
-      statusMessage = '✅ Änderungen gespeichert';
-      editMode = false;
-    });
+      await FirebaseFirestore.instance
+          .collection('trips')
+          .doc(widget.trip.id)
+          .update(payload);
+
+      final newFlag = await _resolveCountryCode(destinationController.text);
+
+      if (!mounted) return;
+      setState(() {
+        flagCode = newFlag;
+        statusMessage = '✅ Reise gespeichert!';
+        editMode = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => statusMessage = '❌ Fehler: $e');
+    }
   }
 
   String _formatDate(dynamic raw) {
     if (raw == null) return '';
     try {
-      if (raw is String) return DateFormat('dd.MM.yyyy').format(DateTime.parse(raw));
-      if (raw is Timestamp) return DateFormat('dd.MM.yyyy').format(raw.toDate());
+      if (raw is String) {
+        return DateFormat('dd.MM.yyyy')
+            .format(DateTime.parse(raw).toLocal());
+      }
+      if (raw is Timestamp) {
+        return DateFormat('dd.MM.yyyy').format(raw.toDate());
+      }
     } catch (_) {}
-    return raw.toString();
+    return '';
   }
 
-  Widget _buildField(String label, TextEditingController ctrl, {int maxLines = 1}) {
+  Widget _buildField(String label, TextEditingController ctrl,
+      {int maxLines = 1}) {
     if (editMode) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -105,20 +134,18 @@ class _ReiseDetailPageState extends State<ReiseDetailPage> {
           ),
         ),
       );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Expanded(
-              child: Text(ctrl.text.isEmpty ? '–' : ctrl.text),
-            ),
-          ],
-        ),
-      );
     }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Text(ctrl.text.isEmpty ? '–' : ctrl.text)),
+        ],
+      ),
+    );
   }
 
   @override
@@ -140,9 +167,8 @@ class _ReiseDetailPageState extends State<ReiseDetailPage> {
             ),
           Expanded(child: Text(widget.trip.title)),
           IconButton(
-            icon: Icon(editMode ? Icons.close : Icons.edit),
-            onPressed: () => setState(() => editMode = !editMode),
-          )
+              icon: Icon(editMode ? Icons.close : Icons.edit),
+              onPressed: () => setState(() => editMode = !editMode)),
         ]),
       ),
       body: loading
@@ -151,97 +177,126 @@ class _ReiseDetailPageState extends State<ReiseDetailPage> {
               padding: const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  if (statusMessage.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(statusMessage,
-                          style: TextStyle(
-                              color: statusMessage.startsWith('✅') ? Colors.green : Colors.red)),
-                    ),
-                  _buildField('Reiseziel', destinationController),
-                  _buildField('Startdatum', startController),
-                  _buildField('Enddatum', endController),
-                  _buildField('Beschreibung', descriptionController, maxLines: 3),
-
-                  if (editMode)
-                    Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        ElevatedButton(onPressed: _speichern, child: const Text('Speichern')),
-                      ],
-                    )
-                  else ...[
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.settings),
-                      label: const Text('Reise konfigurieren'),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => ReiseKonfigPage(trip: widget.trip)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (statusMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(statusMessage,
+                            style: TextStyle(
+                                color: statusMessage.startsWith('✅')
+                                    ? Colors.green
+                                    : Colors.red)),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text('Reiseverlauf', style: textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('trips')
-                          .doc(widget.trip.id)
-                          .collection('itineraries')
-                          .orderBy('dayIndex')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) return const CircularProgressIndicator();
-                        final docs = snapshot.data!.docs;
-                        if (docs.isEmpty) return const Text("Kein Reiseverlauf vorhanden.");
+                    _buildField('Reiseziel', destinationController),
+                    _buildField('Startdatum', startController),
+                    _buildField('Enddatum', endController),
+                    _buildField('Beschreibung', descriptionController,
+                        maxLines: 3),
+                    if (editMode)
+                      Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                              onPressed: _speichern,
+                              child: const Text('Speichern')),
+                        ],
+                      )
+                    else ...[
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.settings),
+                        label: const Text('Reise konfigurieren'),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  ReiseKonfigPage(trip: widget.trip)),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text('Reiseverlauf', style: textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('trips')
+                            .doc(widget.trip.id)
+                            .collection('itineraries')
+                            .orderBy('dayIndex')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
+                          final docs = snapshot.data!.docs;
+                          if (docs.isEmpty) {
+                            return const Text('Kein Reiseverlauf vorhanden.');
+                          }
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics:
+                                const NeverScrollableScrollPhysics(),
+                            itemCount: docs.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final data = docs[index].data()
+                                  as Map<String, dynamic>;
+                              final startDate = _formatDate(data['date']);
+                              final endDate = _formatDate(data['endDate']);
+                              final items =
+                                  List<Map<String, dynamic>>.from(
+                                      data['items'] ?? []);
+                              final mainLocation = items.isNotEmpty
+                                  ? items.first['title'] ?? 'Unbekannt'
+                                  : 'Unbekannt';
 
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: docs.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                          itemBuilder: (context, index) {
-                            final data = docs[index].data() as Map<String, dynamic>;
-                            final startDate = _formatDate(data['date']);
-                            final endDate = _formatDate(data['endDate']);
-                            final items = List<Map<String, dynamic>>.from(data['items'] ?? []);
-                            final mainLocation = items.isNotEmpty
-                                ? items.first['title'] ?? 'Unbekannt'
-                                : 'Unbekannt';
-
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(children: [
-                                  Container(
-                                      width: 12,
-                                      height: 12,
-                                      decoration: const BoxDecoration(
-                                          shape: BoxShape.circle, color: Colors.blue)),
-                                  if (index != docs.length - 1)
-                                    Container(width: 2, height: 50, color: Colors.blue.shade200),
-                                ]),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Etappe ${index + 1}: $startDate – $endDate',
+                              return Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Column(children: [
+                                    Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.blue)),
+                                    if (index != docs.length - 1)
+                                      Container(
+                                          width: 2,
+                                          height: 50,
+                                          color: Colors.blue.shade200),
+                                  ]),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Etappe ${index + 1}: '
+                                          '$startDate – $endDate',
                                           style: textTheme.bodyMedium
-                                              ?.copyWith(fontWeight: FontWeight.w600)),
-                                      Text('• $mainLocation', style: textTheme.bodySmall),
-                                    ],
+                                              ?.copyWith(
+                                                  fontWeight:
+                                                      FontWeight.w600),
+                                        ),
+                                        Text('• $mainLocation',
+                                            style: textTheme.bodySmall),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    )
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
                   ],
-                ]),
+                ),
               ),
             ),
     );

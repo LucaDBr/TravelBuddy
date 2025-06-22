@@ -12,8 +12,7 @@ part of 'itinerary_item.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 ItineraryItem _$ItineraryItemFromJson(Map<String, dynamic> json) {
   return _ItineraryItem.fromJson(json);
@@ -42,18 +41,16 @@ mixin _$ItineraryItem {
 /// @nodoc
 abstract class $ItineraryItemCopyWith<$Res> {
   factory $ItineraryItemCopyWith(
-    ItineraryItem value,
-    $Res Function(ItineraryItem) then,
-  ) = _$ItineraryItemCopyWithImpl<$Res, ItineraryItem>;
+          ItineraryItem value, $Res Function(ItineraryItem) then) =
+      _$ItineraryItemCopyWithImpl<$Res, ItineraryItem>;
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    int dayIndex,
-    DateTime date,
-    DateTime endDate,
-    List<ItineraryPoint> items,
-    DateTime lastModified,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      int dayIndex,
+      DateTime date,
+      DateTime endDate,
+      List<ItineraryPoint> items,
+      DateTime lastModified});
 }
 
 /// @nodoc
@@ -78,35 +75,32 @@ class _$ItineraryItemCopyWithImpl<$Res, $Val extends ItineraryItem>
     Object? items = null,
     Object? lastModified = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: freezed == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            dayIndex: null == dayIndex
-                ? _value.dayIndex
-                : dayIndex // ignore: cast_nullable_to_non_nullable
-                      as int,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            endDate: null == endDate
-                ? _value.endDate
-                : endDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            items: null == items
-                ? _value.items
-                : items // ignore: cast_nullable_to_non_nullable
-                      as List<ItineraryPoint>,
-            lastModified: null == lastModified
-                ? _value.lastModified
-                : lastModified // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dayIndex: null == dayIndex
+          ? _value.dayIndex
+          : dayIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endDate: null == endDate
+          ? _value.endDate
+          : endDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      items: null == items
+          ? _value.items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<ItineraryPoint>,
+      lastModified: null == lastModified
+          ? _value.lastModified
+          : lastModified // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
@@ -114,19 +108,17 @@ class _$ItineraryItemCopyWithImpl<$Res, $Val extends ItineraryItem>
 abstract class _$$ItineraryItemImplCopyWith<$Res>
     implements $ItineraryItemCopyWith<$Res> {
   factory _$$ItineraryItemImplCopyWith(
-    _$ItineraryItemImpl value,
-    $Res Function(_$ItineraryItemImpl) then,
-  ) = __$$ItineraryItemImplCopyWithImpl<$Res>;
+          _$ItineraryItemImpl value, $Res Function(_$ItineraryItemImpl) then) =
+      __$$ItineraryItemImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    int dayIndex,
-    DateTime date,
-    DateTime endDate,
-    List<ItineraryPoint> items,
-    DateTime lastModified,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      int dayIndex,
+      DateTime date,
+      DateTime endDate,
+      List<ItineraryPoint> items,
+      DateTime lastModified});
 }
 
 /// @nodoc
@@ -134,9 +126,8 @@ class __$$ItineraryItemImplCopyWithImpl<$Res>
     extends _$ItineraryItemCopyWithImpl<$Res, _$ItineraryItemImpl>
     implements _$$ItineraryItemImplCopyWith<$Res> {
   __$$ItineraryItemImplCopyWithImpl(
-    _$ItineraryItemImpl _value,
-    $Res Function(_$ItineraryItemImpl) _then,
-  ) : super(_value, _then);
+      _$ItineraryItemImpl _value, $Res Function(_$ItineraryItemImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of ItineraryItem
   /// with the given fields replaced by the non-null parameter values.
@@ -150,48 +141,46 @@ class __$$ItineraryItemImplCopyWithImpl<$Res>
     Object? items = null,
     Object? lastModified = null,
   }) {
-    return _then(
-      _$ItineraryItemImpl(
-        id: freezed == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        dayIndex: null == dayIndex
-            ? _value.dayIndex
-            : dayIndex // ignore: cast_nullable_to_non_nullable
-                  as int,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        endDate: null == endDate
-            ? _value.endDate
-            : endDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        items: null == items
-            ? _value._items
-            : items // ignore: cast_nullable_to_non_nullable
-                  as List<ItineraryPoint>,
-        lastModified: null == lastModified
-            ? _value.lastModified
-            : lastModified // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$ItineraryItemImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      dayIndex: null == dayIndex
+          ? _value.dayIndex
+          : dayIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      date: null == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      endDate: null == endDate
+          ? _value.endDate
+          : endDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      items: null == items
+          ? _value._items
+          : items // ignore: cast_nullable_to_non_nullable
+              as List<ItineraryPoint>,
+      lastModified: null == lastModified
+          ? _value.lastModified
+          : lastModified // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ItineraryItemImpl implements _ItineraryItem {
-  _$ItineraryItemImpl({
-    @JsonKey(ignore: true) this.id,
-    required this.dayIndex,
-    required this.date,
-    required this.endDate,
-    required final List<ItineraryPoint> items,
-    required this.lastModified,
-  }) : _items = items;
+  _$ItineraryItemImpl(
+      {@JsonKey(ignore: true) this.id,
+      required this.dayIndex,
+      required this.date,
+      required this.endDate,
+      required final List<ItineraryPoint> items,
+      required this.lastModified})
+      : _items = items;
 
   factory _$ItineraryItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$ItineraryItemImplFromJson(json);
@@ -238,15 +227,8 @@ class _$ItineraryItemImpl implements _ItineraryItem {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    dayIndex,
-    date,
-    endDate,
-    const DeepCollectionEquality().hash(_items),
-    lastModified,
-  );
+  int get hashCode => Object.hash(runtimeType, id, dayIndex, date, endDate,
+      const DeepCollectionEquality().hash(_items), lastModified);
 
   /// Create a copy of ItineraryItem
   /// with the given fields replaced by the non-null parameter values.
@@ -258,19 +240,20 @@ class _$ItineraryItemImpl implements _ItineraryItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ItineraryItemImplToJson(this);
+    return _$$ItineraryItemImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ItineraryItem implements ItineraryItem {
-  factory _ItineraryItem({
-    @JsonKey(ignore: true) final String? id,
-    required final int dayIndex,
-    required final DateTime date,
-    required final DateTime endDate,
-    required final List<ItineraryPoint> items,
-    required final DateTime lastModified,
-  }) = _$ItineraryItemImpl;
+  factory _ItineraryItem(
+      {@JsonKey(ignore: true) final String? id,
+      required final int dayIndex,
+      required final DateTime date,
+      required final DateTime endDate,
+      required final List<ItineraryPoint> items,
+      required final DateTime lastModified}) = _$ItineraryItemImpl;
 
   factory _ItineraryItem.fromJson(Map<String, dynamic> json) =
       _$ItineraryItemImpl.fromJson;
@@ -321,9 +304,8 @@ mixin _$ItineraryPoint {
 /// @nodoc
 abstract class $ItineraryPointCopyWith<$Res> {
   factory $ItineraryPointCopyWith(
-    ItineraryPoint value,
-    $Res Function(ItineraryPoint) then,
-  ) = _$ItineraryPointCopyWithImpl<$Res, ItineraryPoint>;
+          ItineraryPoint value, $Res Function(ItineraryPoint) then) =
+      _$ItineraryPointCopyWithImpl<$Res, ItineraryPoint>;
   @useResult
   $Res call({String title, String? notes, double latitude, double longitude});
 }
@@ -348,37 +330,33 @@ class _$ItineraryPointCopyWithImpl<$Res, $Val extends ItineraryPoint>
     Object? latitude = null,
     Object? longitude = null,
   }) {
-    return _then(
-      _value.copyWith(
-            title: null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                      as String,
-            notes: freezed == notes
-                ? _value.notes
-                : notes // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            latitude: null == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double,
-            longitude: null == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+    ) as $Val);
   }
 }
 
 /// @nodoc
 abstract class _$$ItineraryPointImplCopyWith<$Res>
     implements $ItineraryPointCopyWith<$Res> {
-  factory _$$ItineraryPointImplCopyWith(
-    _$ItineraryPointImpl value,
-    $Res Function(_$ItineraryPointImpl) then,
-  ) = __$$ItineraryPointImplCopyWithImpl<$Res>;
+  factory _$$ItineraryPointImplCopyWith(_$ItineraryPointImpl value,
+          $Res Function(_$ItineraryPointImpl) then) =
+      __$$ItineraryPointImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String title, String? notes, double latitude, double longitude});
@@ -389,9 +367,8 @@ class __$$ItineraryPointImplCopyWithImpl<$Res>
     extends _$ItineraryPointCopyWithImpl<$Res, _$ItineraryPointImpl>
     implements _$$ItineraryPointImplCopyWith<$Res> {
   __$$ItineraryPointImplCopyWithImpl(
-    _$ItineraryPointImpl _value,
-    $Res Function(_$ItineraryPointImpl) _then,
-  ) : super(_value, _then);
+      _$ItineraryPointImpl _value, $Res Function(_$ItineraryPointImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of ItineraryPoint
   /// with the given fields replaced by the non-null parameter values.
@@ -403,38 +380,35 @@ class __$$ItineraryPointImplCopyWithImpl<$Res>
     Object? latitude = null,
     Object? longitude = null,
   }) {
-    return _then(
-      _$ItineraryPointImpl(
-        title: null == title
-            ? _value.title
-            : title // ignore: cast_nullable_to_non_nullable
-                  as String,
-        notes: freezed == notes
-            ? _value.notes
-            : notes // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        latitude: null == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double,
-        longitude: null == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double,
-      ),
-    );
+    return _then(_$ItineraryPointImpl(
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
+      latitude: null == latitude
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: null == longitude
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$ItineraryPointImpl implements _ItineraryPoint {
-  _$ItineraryPointImpl({
-    required this.title,
-    this.notes,
-    required this.latitude,
-    required this.longitude,
-  });
+  _$ItineraryPointImpl(
+      {required this.title,
+      this.notes,
+      required this.latitude,
+      required this.longitude});
 
   factory _$ItineraryPointImpl.fromJson(Map<String, dynamic> json) =>
       _$$ItineraryPointImplFromJson(json);
@@ -478,23 +452,22 @@ class _$ItineraryPointImpl implements _ItineraryPoint {
   @pragma('vm:prefer-inline')
   _$$ItineraryPointImplCopyWith<_$ItineraryPointImpl> get copyWith =>
       __$$ItineraryPointImplCopyWithImpl<_$ItineraryPointImpl>(
-        this,
-        _$identity,
-      );
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ItineraryPointImplToJson(this);
+    return _$$ItineraryPointImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _ItineraryPoint implements ItineraryPoint {
-  factory _ItineraryPoint({
-    required final String title,
-    final String? notes,
-    required final double latitude,
-    required final double longitude,
-  }) = _$ItineraryPointImpl;
+  factory _ItineraryPoint(
+      {required final String title,
+      final String? notes,
+      required final double latitude,
+      required final double longitude}) = _$ItineraryPointImpl;
 
   factory _ItineraryPoint.fromJson(Map<String, dynamic> json) =
       _$ItineraryPointImpl.fromJson;

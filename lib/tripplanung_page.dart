@@ -26,6 +26,7 @@ class _TripplanungPageState extends State<TripplanungPage> {
   @override
   void initState() {
     super.initState();
+
     _stages$ = FirebaseFirestore.instance
         .collection('trips')
         .doc(widget.trip.id)
@@ -121,8 +122,9 @@ class _TripplanungPageState extends State<TripplanungPage> {
 
           LatLng center = const LatLng(48.8566, 2.3522);
           if (coords.isNotEmpty && mapReady) {
-            center = coords.first;
-            _mapController.moveAndRotate(center, _zoom, 0);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _mapController.moveAndRotate(coords.first, _zoom, 0);
+            });
           }
 
           return Column(

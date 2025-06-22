@@ -12,8 +12,7 @@ part of 'budget_entry.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 BudgetEntry _$BudgetEntryFromJson(Map<String, dynamic> json) {
   return _BudgetEntry.fromJson(json);
@@ -41,17 +40,15 @@ mixin _$BudgetEntry {
 /// @nodoc
 abstract class $BudgetEntryCopyWith<$Res> {
   factory $BudgetEntryCopyWith(
-    BudgetEntry value,
-    $Res Function(BudgetEntry) then,
-  ) = _$BudgetEntryCopyWithImpl<$Res, BudgetEntry>;
+          BudgetEntry value, $Res Function(BudgetEntry) then) =
+      _$BudgetEntryCopyWithImpl<$Res, BudgetEntry>;
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String category,
-    double planned,
-    double? actual,
-    String currency,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String category,
+      double planned,
+      double? actual,
+      String currency});
 }
 
 /// @nodoc
@@ -75,31 +72,28 @@ class _$BudgetEntryCopyWithImpl<$Res, $Val extends BudgetEntry>
     Object? actual = freezed,
     Object? currency = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: freezed == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            category: null == category
-                ? _value.category
-                : category // ignore: cast_nullable_to_non_nullable
-                      as String,
-            planned: null == planned
-                ? _value.planned
-                : planned // ignore: cast_nullable_to_non_nullable
-                      as double,
-            actual: freezed == actual
-                ? _value.actual
-                : actual // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            currency: null == currency
-                ? _value.currency
-                : currency // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      planned: null == planned
+          ? _value.planned
+          : planned // ignore: cast_nullable_to_non_nullable
+              as double,
+      actual: freezed == actual
+          ? _value.actual
+          : actual // ignore: cast_nullable_to_non_nullable
+              as double?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
   }
 }
 
@@ -107,18 +101,16 @@ class _$BudgetEntryCopyWithImpl<$Res, $Val extends BudgetEntry>
 abstract class _$$BudgetEntryImplCopyWith<$Res>
     implements $BudgetEntryCopyWith<$Res> {
   factory _$$BudgetEntryImplCopyWith(
-    _$BudgetEntryImpl value,
-    $Res Function(_$BudgetEntryImpl) then,
-  ) = __$$BudgetEntryImplCopyWithImpl<$Res>;
+          _$BudgetEntryImpl value, $Res Function(_$BudgetEntryImpl) then) =
+      __$$BudgetEntryImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String category,
-    double planned,
-    double? actual,
-    String currency,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String category,
+      double planned,
+      double? actual,
+      String currency});
 }
 
 /// @nodoc
@@ -126,9 +118,8 @@ class __$$BudgetEntryImplCopyWithImpl<$Res>
     extends _$BudgetEntryCopyWithImpl<$Res, _$BudgetEntryImpl>
     implements _$$BudgetEntryImplCopyWith<$Res> {
   __$$BudgetEntryImplCopyWithImpl(
-    _$BudgetEntryImpl _value,
-    $Res Function(_$BudgetEntryImpl) _then,
-  ) : super(_value, _then);
+      _$BudgetEntryImpl _value, $Res Function(_$BudgetEntryImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of BudgetEntry
   /// with the given fields replaced by the non-null parameter values.
@@ -141,43 +132,40 @@ class __$$BudgetEntryImplCopyWithImpl<$Res>
     Object? actual = freezed,
     Object? currency = null,
   }) {
-    return _then(
-      _$BudgetEntryImpl(
-        id: freezed == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        category: null == category
-            ? _value.category
-            : category // ignore: cast_nullable_to_non_nullable
-                  as String,
-        planned: null == planned
-            ? _value.planned
-            : planned // ignore: cast_nullable_to_non_nullable
-                  as double,
-        actual: freezed == actual
-            ? _value.actual
-            : actual // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        currency: null == currency
-            ? _value.currency
-            : currency // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
+    return _then(_$BudgetEntryImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      category: null == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as String,
+      planned: null == planned
+          ? _value.planned
+          : planned // ignore: cast_nullable_to_non_nullable
+              as double,
+      actual: freezed == actual
+          ? _value.actual
+          : actual // ignore: cast_nullable_to_non_nullable
+              as double?,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$BudgetEntryImpl implements _BudgetEntry {
-  _$BudgetEntryImpl({
-    @JsonKey(ignore: true) this.id,
-    required this.category,
-    required this.planned,
-    this.actual,
-    required this.currency,
-  });
+  _$BudgetEntryImpl(
+      {@JsonKey(ignore: true) this.id,
+      required this.category,
+      required this.planned,
+      this.actual,
+      required this.currency});
 
   factory _$BudgetEntryImpl.fromJson(Map<String, dynamic> json) =>
       _$$BudgetEntryImplFromJson(json);
@@ -228,18 +216,19 @@ class _$BudgetEntryImpl implements _BudgetEntry {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BudgetEntryImplToJson(this);
+    return _$$BudgetEntryImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _BudgetEntry implements BudgetEntry {
-  factory _BudgetEntry({
-    @JsonKey(ignore: true) final String? id,
-    required final String category,
-    required final double planned,
-    final double? actual,
-    required final String currency,
-  }) = _$BudgetEntryImpl;
+  factory _BudgetEntry(
+      {@JsonKey(ignore: true) final String? id,
+      required final String category,
+      required final double planned,
+      final double? actual,
+      required final String currency}) = _$BudgetEntryImpl;
 
   factory _BudgetEntry.fromJson(Map<String, dynamic> json) =
       _$BudgetEntryImpl.fromJson;

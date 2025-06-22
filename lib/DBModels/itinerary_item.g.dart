@@ -35,10 +35,10 @@ _$ItineraryPointImpl _$$ItineraryPointImplFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$$ItineraryPointImplToJson(
-  _$ItineraryPointImpl instance,
-) => <String, dynamic>{
-  'title': instance.title,
-  'notes': instance.notes,
-  'latitude': instance.latitude,
-  'longitude': instance.longitude,
-};
+        _$ItineraryPointImpl instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'notes': instance.notes,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+    };

@@ -12,8 +12,7 @@ part of 'trip_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 TripModel _$TripModelFromJson(Map<String, dynamic> json) {
   return _TripModel.fromJson(json);
@@ -24,12 +23,15 @@ mixin _$TripModel {
   @JsonKey(ignore: true)
   String? get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  @TimestampDateTimeConverter()
   DateTime? get startDate => throw _privateConstructorUsedError;
+  @TimestampDateTimeConverter()
   DateTime? get endDate => throw _privateConstructorUsedError;
   String? get destination => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String get ownerUid => throw _privateConstructorUsedError;
   List<String> get members => throw _privateConstructorUsedError;
+  @TimestampDateTimeConverter()
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this TripModel to a JSON map.
@@ -47,17 +49,16 @@ abstract class $TripModelCopyWith<$Res> {
   factory $TripModelCopyWith(TripModel value, $Res Function(TripModel) then) =
       _$TripModelCopyWithImpl<$Res, TripModel>;
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String title,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? destination,
-    String? description,
-    String ownerUid,
-    List<String> members,
-    DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String title,
+      @TimestampDateTimeConverter() DateTime? startDate,
+      @TimestampDateTimeConverter() DateTime? endDate,
+      String? destination,
+      String? description,
+      String ownerUid,
+      List<String> members,
+      @TimestampDateTimeConverter() DateTime createdAt});
 }
 
 /// @nodoc
@@ -85,47 +86,44 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
     Object? members = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: freezed == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            title: null == title
-                ? _value.title
-                : title // ignore: cast_nullable_to_non_nullable
-                      as String,
-            startDate: freezed == startDate
-                ? _value.startDate
-                : startDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            endDate: freezed == endDate
-                ? _value.endDate
-                : endDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            destination: freezed == destination
-                ? _value.destination
-                : destination // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            description: freezed == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            ownerUid: null == ownerUid
-                ? _value.ownerUid
-                : ownerUid // ignore: cast_nullable_to_non_nullable
-                      as String,
-            members: null == members
-                ? _value.members
-                : members // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      startDate: freezed == startDate
+          ? _value.startDate
+          : startDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      endDate: freezed == endDate
+          ? _value.endDate
+          : endDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      ownerUid: null == ownerUid
+          ? _value.ownerUid
+          : ownerUid // ignore: cast_nullable_to_non_nullable
+              as String,
+      members: null == members
+          ? _value.members
+          : members // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
@@ -133,22 +131,20 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
 abstract class _$$TripModelImplCopyWith<$Res>
     implements $TripModelCopyWith<$Res> {
   factory _$$TripModelImplCopyWith(
-    _$TripModelImpl value,
-    $Res Function(_$TripModelImpl) then,
-  ) = __$$TripModelImplCopyWithImpl<$Res>;
+          _$TripModelImpl value, $Res Function(_$TripModelImpl) then) =
+      __$$TripModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String title,
-    DateTime? startDate,
-    DateTime? endDate,
-    String? destination,
-    String? description,
-    String ownerUid,
-    List<String> members,
-    DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String title,
+      @TimestampDateTimeConverter() DateTime? startDate,
+      @TimestampDateTimeConverter() DateTime? endDate,
+      String? destination,
+      String? description,
+      String ownerUid,
+      List<String> members,
+      @TimestampDateTimeConverter() DateTime createdAt});
 }
 
 /// @nodoc
@@ -156,9 +152,8 @@ class __$$TripModelImplCopyWithImpl<$Res>
     extends _$TripModelCopyWithImpl<$Res, _$TripModelImpl>
     implements _$$TripModelImplCopyWith<$Res> {
   __$$TripModelImplCopyWithImpl(
-    _$TripModelImpl _value,
-    $Res Function(_$TripModelImpl) _then,
-  ) : super(_value, _then);
+      _$TripModelImpl _value, $Res Function(_$TripModelImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of TripModel
   /// with the given fields replaced by the non-null parameter values.
@@ -175,63 +170,61 @@ class __$$TripModelImplCopyWithImpl<$Res>
     Object? members = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _$TripModelImpl(
-        id: freezed == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        title: null == title
-            ? _value.title
-            : title // ignore: cast_nullable_to_non_nullable
-                  as String,
-        startDate: freezed == startDate
-            ? _value.startDate
-            : startDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        endDate: freezed == endDate
-            ? _value.endDate
-            : endDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        destination: freezed == destination
-            ? _value.destination
-            : destination // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        description: freezed == description
-            ? _value.description
-            : description // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        ownerUid: null == ownerUid
-            ? _value.ownerUid
-            : ownerUid // ignore: cast_nullable_to_non_nullable
-                  as String,
-        members: null == members
-            ? _value._members
-            : members // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$TripModelImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      startDate: freezed == startDate
+          ? _value.startDate
+          : startDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      endDate: freezed == endDate
+          ? _value.endDate
+          : endDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      destination: freezed == destination
+          ? _value.destination
+          : destination // ignore: cast_nullable_to_non_nullable
+              as String?,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      ownerUid: null == ownerUid
+          ? _value.ownerUid
+          : ownerUid // ignore: cast_nullable_to_non_nullable
+              as String,
+      members: null == members
+          ? _value._members
+          : members // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TripModelImpl implements _TripModel {
-  _$TripModelImpl({
-    @JsonKey(ignore: true) this.id,
-    required this.title,
-    this.startDate,
-    this.endDate,
-    this.destination,
-    this.description,
-    required this.ownerUid,
-    required final List<String> members,
-    required this.createdAt,
-  }) : _members = members;
+  _$TripModelImpl(
+      {@JsonKey(ignore: true) this.id,
+      required this.title,
+      @TimestampDateTimeConverter() this.startDate,
+      @TimestampDateTimeConverter() this.endDate,
+      this.destination,
+      this.description,
+      required this.ownerUid,
+      final List<String> members = const <String>[],
+      @TimestampDateTimeConverter() required this.createdAt})
+      : _members = members;
 
   factory _$TripModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TripModelImplFromJson(json);
@@ -242,8 +235,10 @@ class _$TripModelImpl implements _TripModel {
   @override
   final String title;
   @override
+  @TimestampDateTimeConverter()
   final DateTime? startDate;
   @override
+  @TimestampDateTimeConverter()
   final DateTime? endDate;
   @override
   final String? destination;
@@ -253,6 +248,7 @@ class _$TripModelImpl implements _TripModel {
   final String ownerUid;
   final List<String> _members;
   @override
+  @JsonKey()
   List<String> get members {
     if (_members is EqualUnmodifiableListView) return _members;
     // ignore: implicit_dynamic_type
@@ -260,6 +256,7 @@ class _$TripModelImpl implements _TripModel {
   }
 
   @override
+  @TimestampDateTimeConverter()
   final DateTime createdAt;
 
   @override
@@ -291,17 +288,16 @@ class _$TripModelImpl implements _TripModel {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    title,
-    startDate,
-    endDate,
-    destination,
-    description,
-    ownerUid,
-    const DeepCollectionEquality().hash(_members),
-    createdAt,
-  );
+      runtimeType,
+      id,
+      title,
+      startDate,
+      endDate,
+      destination,
+      description,
+      ownerUid,
+      const DeepCollectionEquality().hash(_members),
+      createdAt);
 
   /// Create a copy of TripModel
   /// with the given fields replaced by the non-null parameter values.
@@ -313,22 +309,24 @@ class _$TripModelImpl implements _TripModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TripModelImplToJson(this);
+    return _$$TripModelImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _TripModel implements TripModel {
-  factory _TripModel({
-    @JsonKey(ignore: true) final String? id,
-    required final String title,
-    final DateTime? startDate,
-    final DateTime? endDate,
-    final String? destination,
-    final String? description,
-    required final String ownerUid,
-    required final List<String> members,
-    required final DateTime createdAt,
-  }) = _$TripModelImpl;
+  factory _TripModel(
+          {@JsonKey(ignore: true) final String? id,
+          required final String title,
+          @TimestampDateTimeConverter() final DateTime? startDate,
+          @TimestampDateTimeConverter() final DateTime? endDate,
+          final String? destination,
+          final String? description,
+          required final String ownerUid,
+          final List<String> members,
+          @TimestampDateTimeConverter() required final DateTime createdAt}) =
+      _$TripModelImpl;
 
   factory _TripModel.fromJson(Map<String, dynamic> json) =
       _$TripModelImpl.fromJson;
@@ -339,8 +337,10 @@ abstract class _TripModel implements TripModel {
   @override
   String get title;
   @override
+  @TimestampDateTimeConverter()
   DateTime? get startDate;
   @override
+  @TimestampDateTimeConverter()
   DateTime? get endDate;
   @override
   String? get destination;
@@ -351,6 +351,7 @@ abstract class _TripModel implements TripModel {
   @override
   List<String> get members;
   @override
+  @TimestampDateTimeConverter()
   DateTime get createdAt;
 
   /// Create a copy of TripModel

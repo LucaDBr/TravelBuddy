@@ -12,8 +12,7 @@ part of 'trip_dokument.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 TripDokument _$TripDokumentFromJson(Map<String, dynamic> json) {
   return _TripDokument.fromJson(json);
@@ -42,18 +41,16 @@ mixin _$TripDokument {
 /// @nodoc
 abstract class $TripDokumentCopyWith<$Res> {
   factory $TripDokumentCopyWith(
-    TripDokument value,
-    $Res Function(TripDokument) then,
-  ) = _$TripDokumentCopyWithImpl<$Res, TripDokument>;
+          TripDokument value, $Res Function(TripDokument) then) =
+      _$TripDokumentCopyWithImpl<$Res, TripDokument>;
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String name,
-    String type,
-    String storagePath,
-    String uploadedBy,
-    DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String name,
+      String type,
+      String storagePath,
+      String uploadedBy,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -78,35 +75,32 @@ class _$TripDokumentCopyWithImpl<$Res, $Val extends TripDokument>
     Object? uploadedBy = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _value.copyWith(
-            id: freezed == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as String,
-            storagePath: null == storagePath
-                ? _value.storagePath
-                : storagePath // ignore: cast_nullable_to_non_nullable
-                      as String,
-            uploadedBy: null == uploadedBy
-                ? _value.uploadedBy
-                : uploadedBy // ignore: cast_nullable_to_non_nullable
-                      as String,
-            createdAt: null == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-          )
-          as $Val,
-    );
+    return _then(_value.copyWith(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      storagePath: null == storagePath
+          ? _value.storagePath
+          : storagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      uploadedBy: null == uploadedBy
+          ? _value.uploadedBy
+          : uploadedBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ) as $Val);
   }
 }
 
@@ -114,19 +108,17 @@ class _$TripDokumentCopyWithImpl<$Res, $Val extends TripDokument>
 abstract class _$$TripDokumentImplCopyWith<$Res>
     implements $TripDokumentCopyWith<$Res> {
   factory _$$TripDokumentImplCopyWith(
-    _$TripDokumentImpl value,
-    $Res Function(_$TripDokumentImpl) then,
-  ) = __$$TripDokumentImplCopyWithImpl<$Res>;
+          _$TripDokumentImpl value, $Res Function(_$TripDokumentImpl) then) =
+      __$$TripDokumentImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({
-    @JsonKey(ignore: true) String? id,
-    String name,
-    String type,
-    String storagePath,
-    String uploadedBy,
-    DateTime createdAt,
-  });
+  $Res call(
+      {@JsonKey(ignore: true) String? id,
+      String name,
+      String type,
+      String storagePath,
+      String uploadedBy,
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -134,9 +126,8 @@ class __$$TripDokumentImplCopyWithImpl<$Res>
     extends _$TripDokumentCopyWithImpl<$Res, _$TripDokumentImpl>
     implements _$$TripDokumentImplCopyWith<$Res> {
   __$$TripDokumentImplCopyWithImpl(
-    _$TripDokumentImpl _value,
-    $Res Function(_$TripDokumentImpl) _then,
-  ) : super(_value, _then);
+      _$TripDokumentImpl _value, $Res Function(_$TripDokumentImpl) _then)
+      : super(_value, _then);
 
   /// Create a copy of TripDokument
   /// with the given fields replaced by the non-null parameter values.
@@ -150,48 +141,45 @@ class __$$TripDokumentImplCopyWithImpl<$Res>
     Object? uploadedBy = null,
     Object? createdAt = null,
   }) {
-    return _then(
-      _$TripDokumentImpl(
-        id: freezed == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as String,
-        storagePath: null == storagePath
-            ? _value.storagePath
-            : storagePath // ignore: cast_nullable_to_non_nullable
-                  as String,
-        uploadedBy: null == uploadedBy
-            ? _value.uploadedBy
-            : uploadedBy // ignore: cast_nullable_to_non_nullable
-                  as String,
-        createdAt: null == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-      ),
-    );
+    return _then(_$TripDokumentImpl(
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
+      storagePath: null == storagePath
+          ? _value.storagePath
+          : storagePath // ignore: cast_nullable_to_non_nullable
+              as String,
+      uploadedBy: null == uploadedBy
+          ? _value.uploadedBy
+          : uploadedBy // ignore: cast_nullable_to_non_nullable
+              as String,
+      createdAt: null == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+    ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
 class _$TripDokumentImpl implements _TripDokument {
-  _$TripDokumentImpl({
-    @JsonKey(ignore: true) this.id,
-    required this.name,
-    required this.type,
-    required this.storagePath,
-    required this.uploadedBy,
-    required this.createdAt,
-  });
+  _$TripDokumentImpl(
+      {@JsonKey(ignore: true) this.id,
+      required this.name,
+      required this.type,
+      required this.storagePath,
+      required this.uploadedBy,
+      required this.createdAt});
 
   factory _$TripDokumentImpl.fromJson(Map<String, dynamic> json) =>
       _$$TripDokumentImplFromJson(json);
@@ -234,14 +222,7 @@ class _$TripDokumentImpl implements _TripDokument {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-    runtimeType,
-    id,
-    name,
-    type,
-    storagePath,
-    uploadedBy,
-    createdAt,
-  );
+      runtimeType, id, name, type, storagePath, uploadedBy, createdAt);
 
   /// Create a copy of TripDokument
   /// with the given fields replaced by the non-null parameter values.
@@ -253,19 +234,20 @@ class _$TripDokumentImpl implements _TripDokument {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TripDokumentImplToJson(this);
+    return _$$TripDokumentImplToJson(
+      this,
+    );
   }
 }
 
 abstract class _TripDokument implements TripDokument {
-  factory _TripDokument({
-    @JsonKey(ignore: true) final String? id,
-    required final String name,
-    required final String type,
-    required final String storagePath,
-    required final String uploadedBy,
-    required final DateTime createdAt,
-  }) = _$TripDokumentImpl;
+  factory _TripDokument(
+      {@JsonKey(ignore: true) final String? id,
+      required final String name,
+      required final String type,
+      required final String storagePath,
+      required final String uploadedBy,
+      required final DateTime createdAt}) = _$TripDokumentImpl;
 
   factory _TripDokument.fromJson(Map<String, dynamic> json) =
       _$TripDokumentImpl.fromJson;
