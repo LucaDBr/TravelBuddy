@@ -32,6 +32,7 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
   final locationController = TextEditingController();
   final MapController _mapController = MapController();
   double _zoom = 10;
+  bool mapReady = false;
 
   final List<LatLng> routePoints = [];
   List<ItineraryPoint> items = [];
@@ -50,16 +51,21 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
     startDate = widget.day.date;
     endDate = widget.day.endDate;
 
-    if (items.isNotEmpty) {
-      final last = items.last;
-      selectedLocationName = last.title;
-      notesController.text = last.notes ?? '';
-      _zoom = 13;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _mapController.move(LatLng(last.latitude, last.longitude), _zoom);
-      });
-      _fetchWeather(last.latitude, last.longitude);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      mapReady = true;
+      if (items.isNotEmpty) {
+        final last = items.last;
+        selectedLocationName = last.title;
+        notesController.text = last.notes ?? '';
+        _zoom = 13;
+        _mapController.moveAndRotate(
+          LatLng(last.latitude, last.longitude),
+          _zoom,
+          0,
+        );
+        _fetchWeather(last.latitude, last.longitude);
+      }
+    });
 
     _refreshRoute();
   }
@@ -88,14 +94,14 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
   Future<void> _search(String query) async {
     if (query.length < 3) return;
     final url = Uri.parse(
-      'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=6&addressdetails=1');
+        'https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=6&addressdetails=1');
     final res = await http.get(url, headers: {'User-Agent': 'travelbuddy-app'});
     if (res.statusCode == 200) {
       setState(() => suggestions = List.castFrom(jsonDecode(res.body)));
     }
   }
 
-  void _add(Map<String, dynamic> loc) {
+  void _add(Map<String, dynamic> loc) async {
     if (items.length >= maxPoints) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Maximal $maxPoints Orte pro Etappe erlaubt.')),
@@ -127,12 +133,15 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
       items.add(point);
       selectedLocationName = name;
       _zoom = 13;
-      _mapController.move(LatLng(lat, lon), _zoom);
       locationController.clear();
       suggestions.clear();
       weatherMinMax = null;
       currentTemp = null;
     });
+
+    if (mapReady) {
+      _mapController.moveAndRotate(LatLng(lat, lon), _zoom, 0);
+    }
 
     _refreshRoute();
     _fetchWeather(lat, lon);
@@ -153,7 +162,7 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
     final res = await http.post(
       Uri.parse('https://api.openrouteservice.org/v2/directions/driving-car'),
       headers: {
-        'Authorization': '5b3ce3597851110001cf6248d830129fc8ca4773a5d42e3eb9020b62',
+        'Authorization': 'YOUR_API_KEY_HERE',
         'Content-Type': 'application/json',
       },
       body: jsonEncode(body),
@@ -253,7 +262,10 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
               children: [
                 FlutterMap(
                   mapController: _mapController,
-                  options: MapOptions(center: startCenter, zoom: _zoom),
+                  options: MapOptions(
+                    initialCenter: startCenter,
+                    initialZoom: _zoom,
+                  ),
                   children: [
                     TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -268,15 +280,25 @@ class _ItineraryDayPageState extends State<ItineraryDayPage> {
                 ),
                 _ZoomButtons(
                   onZoomIn: () {
+                    if (!mapReady) return;
                     setState(() {
                       _zoom++;
-                      _mapController.move(_mapController.center, _zoom);
+                      _mapController.moveAndRotate(
+                        _mapController.camera.center,
+                        _zoom,
+                        0,
+                      );
                     });
                   },
                   onZoomOut: () {
+                    if (!mapReady) return;
                     setState(() {
                       _zoom--;
-                      _mapController.move(_mapController.center, _zoom);
+                      _mapController.moveAndRotate(
+                        _mapController.camera.center,
+                        _zoom,
+                        0,
+                      );
                     });
                   },
                 ),

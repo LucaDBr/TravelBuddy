@@ -21,6 +21,7 @@ class _TripplanungPageState extends State<TripplanungPage> {
   final MapController _mapController = MapController();
   double _zoom = 6;
   late Stream<List<ItineraryItem>> _stages$;
+  bool mapReady = false;
 
   @override
   void initState() {
@@ -34,6 +35,10 @@ class _TripplanungPageState extends State<TripplanungPage> {
             .map((d) => ItineraryItem.fromJson(d.data()).copyWith(id: d.id))
             .toList()
           ..sort((a, b) => a.date.compareTo(b.date)));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() => mapReady = true);
+    });
   }
 
   Future<void> _createStage() async {
@@ -115,11 +120,9 @@ class _TripplanungPageState extends State<TripplanungPage> {
           final coords = points.map((p) => LatLng(p.latitude, p.longitude)).toList();
 
           LatLng center = const LatLng(48.8566, 2.3522);
-          if (coords.isNotEmpty) {
+          if (coords.isNotEmpty && mapReady) {
             center = coords.first;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _mapController.move(center, _zoom);
-            });
+            _mapController.moveAndRotate(center, _zoom, 0);
           }
 
           return Column(
@@ -136,7 +139,10 @@ class _TripplanungPageState extends State<TripplanungPage> {
                         borderRadius: BorderRadius.circular(12),
                         child: FlutterMap(
                           mapController: _mapController,
-                          options: MapOptions(center: center, zoom: _zoom),
+                          options: MapOptions(
+                            initialCenter: center,
+                            initialZoom: _zoom,
+                          ),
                           children: [
                             TileLayer(
                               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -160,14 +166,20 @@ class _TripplanungPageState extends State<TripplanungPage> {
                         ),
                       ),
                       _ZoomButtons(
-                        onZoomIn: () => setState(() {
-                          _zoom++;
-                          _mapController.move(_mapController.center, _zoom);
-                        }),
-                        onZoomOut: () => setState(() {
-                          _zoom--;
-                          _mapController.move(_mapController.center, _zoom);
-                        }),
+                        onZoomIn: () {
+                          if (!mapReady) return;
+                          setState(() {
+                            _zoom++;
+                            _mapController.moveAndRotate(_mapController.camera.center, _zoom, 0);
+                          });
+                        },
+                        onZoomOut: () {
+                          if (!mapReady) return;
+                          setState(() {
+                            _zoom--;
+                            _mapController.moveAndRotate(_mapController.camera.center, _zoom, 0);
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -257,8 +269,8 @@ class _TripplanungPageState extends State<TripplanungPage> {
                             ],
                           ),
                           onTap: () {
-                            if (latLng != null) {
-                              _mapController.move(latLng, _zoom);
+                            if (latLng != null && mapReady) {
+                              _mapController.moveAndRotate(latLng, _zoom, 0);
                             }
                           },
                         ),
