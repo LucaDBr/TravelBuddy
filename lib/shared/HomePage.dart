@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'LoginAndUserKonfig/login_page.dart';
-import 'LoginAndUserKonfig/user_management_page.dart';
-import 'LoginAndUserKonfig/system_settings_page.dart';
-import 'reise_uebersicht_page.dart';
-import 'reise_detail_page.dart';
-import 'DBModels/trip_model.dart';
+
+import 'login_page.dart';
+import 'mein_profil_page.dart';
+import 'system_settings_page.dart';
+import '../reise_uebersicht_page.dart';
+import '../reise_detail_page.dart';
+import '../DBModels/trip_model.dart';
+import 'custom_app_drawer.dart';
+import 'custom_app_drawer.dart' show BenachrichtigungenPage, MeinProfilPage, FeedbackPage, AboutPage;
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -17,13 +20,6 @@ class WelcomePage extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (_) => const LoginPage()),
     );
-  }
-
-  DateTime? _toDate(dynamic value) {
-    if (value == null) return null;
-    if (value is Timestamp) return value.toDate();
-    if (value is String) return DateTime.tryParse(value);
-    return null;
   }
 
   Stream<List<TripModel>> ladeReisen() {
@@ -64,11 +60,6 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser!;
-    final displayName = user.displayName ?? 'Nutzer';
-    final email = user.email ?? '-';
-    final photoUrl = user.photoURL;
-
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -85,31 +76,39 @@ class WelcomePage extends StatelessWidget {
             ],
           ),
         ),
-        drawer: Drawer(
-          child: ListView(
-            children: [
-              UserAccountsDrawerHeader(
-                accountName: Text(displayName),
-                accountEmail: Text(email),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: photoUrl != null
-                      ? NetworkImage(photoUrl)
-                      : const AssetImage('assets/icon/IconProfiilpicPlaceholder.png') as ImageProvider,
-                ),
-              ),
-              _drawerItem(context, Icons.travel_explore, 'Meine Reisen', const ReiseUebersichtPage()),
-              _drawerItem(context, Icons.manage_accounts, 'Nutzerverwaltung', const UserManagementPage()),
-              _drawerItem(context, Icons.settings, 'Systemeinstellungen', const SystemSettingsPage()),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Abmelden'),
-                onTap: () {
-                  Navigator.pop(context);
-                  logout(context);
-                },
-              ),
-            ],
-          ),
+        drawer: CustomAppDrawer(
+          selectedRoute: '/home',
+          onNavigate: (route) {
+            Navigator.pop(context);
+            switch (route) {
+              case '/home':
+                break;
+              case '/reisen':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const ReiseUebersichtPage()));
+                break;
+              case '/nutzer':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const UserManagementPage()));
+                break;
+              case '/einstellungen':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const SystemSettingsPage()));
+                break;
+              case '/benachrichtigungen':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BenachrichtigungenPage()));
+                break;
+              case '/profil':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const MeinProfilPage()));
+                break;
+              case '/feedback':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackPage()));
+                break;
+              case '/about':
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutPage()));
+                break;
+              case '/logout':
+                logout(context);
+                break;
+            }
+          },
         ),
         body: Padding(
           padding: const EdgeInsets.all(12),
@@ -152,22 +151,7 @@ class WelcomePage extends StatelessWidget {
       ),
     );
   }
-
-  ListTile _drawerItem(BuildContext context, IconData icon, String title, Widget page) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-      },
-    );
-  }
 }
-
-/* -------------------------------------- */
-/* Reise-Tab-Liste mit schöner Optik      */
-/* -------------------------------------- */
 
 class ReiseTabList extends StatelessWidget {
   final List<TripModel> trips;

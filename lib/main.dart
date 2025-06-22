@@ -3,33 +3,36 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'Konfig/firebase_options.dart';
-import 'LoginAndUserKonfig/login_page.dart';
-import 'LoginAndUserKonfig/system_management.dart';
+import 'shared/login_page.dart';
+import 'shared/theme_notifier.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
-    ChangeNotifierProvider(
+    ChangeNotifierProvider<ThemeNotifier>(
       create: (_) => ThemeNotifier(),
-      child: const MyApp(),
+      builder: (context, _) => const AppWithTheme(), // neuer BuildContext → Provider sichtbar
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AppWithTheme extends StatelessWidget {
+  const AppWithTheme({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return MaterialApp(
       title: 'TravelBuddy',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: themeNotifier.mode, // dynamisch über Provider
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      themeMode: themeNotifier.mode,
       home: const LoginPage(),
     );
   }

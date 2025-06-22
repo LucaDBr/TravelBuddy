@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:travelbuddy_flutter/LoginAndUserKonfig/system_management.dart';
+import 'package:travelbuddy_flutter/shared/theme_notifier.dart';
 
 class SystemSettingsPage extends StatelessWidget {
   const SystemSettingsPage({super.key});
@@ -10,7 +10,7 @@ class SystemSettingsPage extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final currentMode = themeNotifier.mode;
 
-    final Color accentColor = const Color(0xFF3B82F6); // Modernes Blau (Tailwind „blue-500“)
+    final Color accentColor = const Color(0xFF3B82F6);
     final Color cardColor = Theme.of(context).cardColor;
     final Color dividerColor = Colors.grey.shade300;
 
@@ -38,7 +38,7 @@ class SystemSettingsPage extends StatelessWidget {
                       Icon(Icons.color_lens_outlined, size: 24),
                       SizedBox(width: 8),
                       Text(
-                        'Darstellung',
+                        'Design-Modus',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -48,11 +48,14 @@ class SystemSettingsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Divider(color: dividerColor),
+
                   RadioListTile<ThemeMode>(
                     title: const Text('Systemstandard'),
                     value: ThemeMode.system,
                     groupValue: currentMode,
-                    onChanged: (mode) => themeNotifier.setMode(mode!),
+                    onChanged: (mode) {
+                      if (mode != null) themeNotifier.setMode(mode);
+                    },
                     secondary: const Icon(Icons.settings_suggest_outlined),
                     activeColor: accentColor,
                   ),
@@ -60,7 +63,9 @@ class SystemSettingsPage extends StatelessWidget {
                     title: const Text('Hell'),
                     value: ThemeMode.light,
                     groupValue: currentMode,
-                    onChanged: (mode) => themeNotifier.setMode(mode!),
+                    onChanged: (mode) {
+                      if (mode != null) themeNotifier.setMode(mode);
+                    },
                     secondary: const Icon(Icons.light_mode_outlined),
                     activeColor: accentColor,
                   ),
@@ -68,7 +73,9 @@ class SystemSettingsPage extends StatelessWidget {
                     title: const Text('Dunkel'),
                     value: ThemeMode.dark,
                     groupValue: currentMode,
-                    onChanged: (mode) => themeNotifier.setMode(mode!),
+                    onChanged: (mode) {
+                      if (mode != null) themeNotifier.setMode(mode);
+                    },
                     secondary: const Icon(Icons.dark_mode_outlined),
                     activeColor: accentColor,
                   ),
